@@ -1,0 +1,1 @@
+Written notes and reflections.
