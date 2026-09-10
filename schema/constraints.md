@@ -1,6 +1,6 @@
 # Integrity Constraints
 
-## Renters
+## renters
 
 - `renter_id` is the primary key. It must be unique and cannot be null.
 - `display_name` cannot be null.
@@ -8,7 +8,7 @@
 - `is_active` must be either true or false, default to true.
 - `date_created` should be updated by a trigger when a record is inserted.
 
-## Properties
+## properties
 
 - `property_id` is the primary key. It must be unique and cannot be null.
 - `display_name` cannot be null.
@@ -16,7 +16,7 @@
 - `is_available` must be either true or false, default to true.
 - `date_created` should be updated by a trigger when a record is inserted.
 
-## Viewings
+## viewings
 
 - `viewing_id` is the primary key. It must be unique and cannot be null.
 - `renter_id`, `property_id`, `viewed_at`, and `duration_min` cannot be null.
@@ -28,12 +28,12 @@
 - `renter_id` references `renters.renter_id` with **ON DELETE RESTRICT**. A renter cannot be deleted while viewing records still reference that renter. This prevents orphaned records and preserves viewing history. It should be marked inactive instead.
 - `property_id` references `properties.property_id` with **ON DELETE RESTRICT**. A property with viewing history cannot be deleted. It should be marked unavailable instead so that its history is preserved.
 
-## Amenities
+## amenities
 
 - `amenity_id` is the primary key. It must be unique and cannot be null.
 - `display_name` cannot be null and must be unique. This prevents duplicate or unnamed amenities.
 
-## Listing Amenities
+## listing_amenities
 
 - The combination of `property_id` and `amenity_id` is the composite primary key.
 - Both attributes cannot be null.
