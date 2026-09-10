@@ -1,0 +1,21 @@
+# Modelling Justification
+
+For my rental marketplace design, I created the five required relations: `renters`, `properties`, `viewings`, `amenities`, and `listing_amenities`. I used an integer primary key for the first four relations. I could have used the renter’s email as a primary key because it is unique, but an email address can change. The same thing applies to property and amenity names. They may be unique now, but they can be changed later. For this reason, I used `renter_id`, `property_id`, `viewing_id`, and `amenity_id` as primary keys. The IDs will not need to change when other information is updated. I still made renter email unique to prevent two accounts from using the same email. I also made the amenity name unique to avoid having duplicate amenities.
+
+The relationship between properties and amenities is many-to-many. One property can have many amenities, and the same amenity can be available at many properties. I created the `listing_amenities` relation to represent this relationship. Its primary key is the combination of `property_id` and `amenity_id`. I did not add a separate ID because these two attributes already identify each association. The combined key also prevents the same amenity from being added to the same property more than once.
+
+The `viewings` relation records when a renter views a property. Each viewing has its own `viewing_id` because the same renter may view the same property multiple times. It also stores `viewed_at` to show when the viewing happened and `duration_min` to show how long it lasted.
+
+For the foreign keys in `viewings`, I chose **ON DELETE RESTRICT**. If a renter or property has viewing records, it cannot be deleted. This protects the viewing history and prevents records from referring to renters or properties that no longer exist. Instead of deleting them, a renter can be marked inactive using `is_active`, and a property can be marked unavailable using `is_available`.
+
+For `listing_amenities`, I chose **ON DELETE CASCADE**. A row in this relation only connects a property with an amenity. If the property or amenity is deleted, that connection is no longer useful, so it should also be deleted automatically.
+
+I decided to enforce the most important rules in the database instead of depending only on the application. Primary keys prevent duplicate records, foreign keys prevent references to records that do not exist, and `NOT NULL` constraints make sure required information is provided. The database also makes email and amenity names unique and requires `rent_amount` and `duration_min` to be greater than zero. These rules should be enforced in the database because information could be added by an application, an import, or an administrative tool. Display and formatting decisions can remain in the application because they do not affect the validity of the data.
+
+# Reflection
+
+One decision another designer might make differently is the primary key for `viewings`. I used a separate `viewing_id`, but another designer could use a combination of `renter_id`, `property_id`, and `viewed_at`. That combination could identify a viewing without creating another ID.
+
+I chose `viewing_id` because a renter may view the same property more than once, and two viewing records could be created very close together. Timestamps may also have different levels of precision depending on where the data comes from. Using the timestamp as part of the primary key could make inserting or importing viewing records more difficult.
+
+Viewings will probably be added more often than they are updated because each visit creates a new event. A separate integer ID makes each write simpler and gives every viewing one stable value that can be used to find it later. It also makes it easier to reference a specific viewing if another relation is added in the future. The extra ID uses a small amount of additional storage, but I think the simpler inserts and lookups are more useful for this platform.
