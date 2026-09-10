@@ -1,0 +1,47 @@
+erDiagram
+    renters{
+        int renter_id PK
+        varchar display_name "NOT NULL"
+        varchar first_name
+        varchar last_name
+        varchar email UK
+        boolean is_active
+        timestamp date_created
+    }
+
+    properties{
+        int property_id PK
+        varchar display_name "NOT NULL"
+        boolean is_available
+        decimal rent_amount "NOT NULL; Greater than 0"
+        varchar address_line1
+        varchar address_line2
+        varchar city
+        varchar state
+        varchar zip_code
+        varchar country
+        timestamp date_created
+    }
+
+    viewings{
+        int viewing_id PK
+        int renter_id FK
+        int property_id FK
+        timestamp viewed_at "NOT NULL"
+        int duration_min "NOT NULL"
+    }
+
+    amenities{
+        int amenity_id PK
+        varchar display_name UK
+    }
+
+    listing_amenities{
+        int property_id PK, FK
+        int amenity_id PK, FK
+    }
+    
+    renters ||--o{ viewings : makes
+    properties ||--o{ viewings : receives
+    properties ||--o{ listing_amenities : has
+    amenities ||--o{ listing_amenities : listed_in
