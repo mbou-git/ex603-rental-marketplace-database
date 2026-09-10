@@ -1,11 +1,11 @@
 # Schema Definition
 
-## 1. Renters
+## 1. renters
 
 **Role:** Actor
 
 **Relation schema:**  
-`Renters(renter_id, display_name, first_name, last_name, email, is_active, date_created)`
+`renters(renter_id, display_name, first_name, last_name, email, is_active, date_created)`
 
 | Attribute | Domain | Description |
 |---|---|---|
@@ -21,12 +21,12 @@
 
 ---
 
-## 2. Properties
+## 2. properties
 
 **Role:** Producer
 
 **Relation schema:**  
-`Properties(property_id, display_name, is_available, rent_amount, address_line1, address_line2, city, state, zip_code, country, date_created)`
+`properties(property_id, display_name, is_available, rent_amount, address_line1, address_line2, city, state, zip_code, country, date_created)`
 
 | Attribute | Domain | Description |
 |---|---|---|
@@ -46,12 +46,12 @@
 
 ---
 
-## 3. Viewings
+## 3. viewings
 
 **Role:** Event
 
 **Relation schema:**  
-`Viewings(viewing_id, renter_id, property_id, viewed_at, duration_min)`
+`viewings(viewing_id, renter_id, property_id, viewed_at, duration_min)`
 
 | Attribute | Domain | Description |
 |---|---|---|
@@ -65,17 +65,17 @@
 
 **Foreign keys:**
 
-- `renter_id` references `Renters(renter_id)`.
-- `property_id` references `Properties(property_id)`.
+- `renter_id` references `renters(renter_id)`.
+- `property_id` references `properties(property_id)`.
 
 ---
 
-## 4. Amenities
+## 4. amenities
 
 **Role:** Catalog
 
 **Relation schema:**  
-`Amenities(amenity_id, display_name)`
+`amenities(amenity_id, display_name)`
 
 | Attribute | Domain | Description |
 |---|---|---|
@@ -86,12 +86,12 @@
 
 ---
 
-## 5. Listing Amenities
+## 5. listing_amenities
 
 **Role:** Junction
 
 **Relation schema:**  
-`Listing_Amenities(property_id, amenity_id)`
+`listing_amenities(property_id, amenity_id)`
 
 | Attribute | Domain | Description |
 |---|---|---|
@@ -102,5 +102,5 @@
 
 **Foreign keys:**
 
-- `property_id` references `Properties(property_id)`.
-- `amenity_id` references `Amenities(amenity_id)`.
+- `property_id` references `properties(property_id)`.
+- `amenity_id` references `amenities(amenity_id)`.
