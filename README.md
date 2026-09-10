@@ -1,2 +1,6 @@
-# ex603-rental-marketplace-database
-This repository is for the work and assignments related to Data and Algorithms for Scalable Systems course
+Rental Marketplace
+
+Author: Mohamed Bouattour
+Theme: Rental Marketplace
+
+This project models a rental marketplace
