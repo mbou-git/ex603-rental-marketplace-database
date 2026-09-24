@@ -1,26 +1,42 @@
 erDiagram
-    renters{
-        int renter_id PK
+    accounts{
+        int account_id PK
         varchar display_name "NOT NULL"
         varchar first_name
         varchar last_name
         varchar email UK
         boolean is_active
         timestamp date_created
+        int referred_by FK "nullable; self-reference"
+    }
+
+    renters{
+        int account_id PK, FK
+        timestamp referral_discount_used_at "nullable"
+    }
+
+    landlords{
+        int account_id PK, FK
+        varchar business_name "nullable"
+        timestamp referral_discount_used_at "nullable"
     }
 
     properties{
         int property_id PK
+        int landlord_id FK
         varchar display_name "NOT NULL"
         boolean is_available
         decimal rent_amount "NOT NULL; Greater than 0"
+        int year_built "1800 to 2100"
         varchar address_line1
         varchar address_line2
+        varchar unit_number "nullable"
         varchar city
         varchar state
         varchar zip_code
         varchar country
         timestamp date_created
+        timestamp listed_at "resets when relisted"
     }
 
     viewings{
@@ -29,6 +45,12 @@ erDiagram
         int property_id FK
         timestamp viewed_at "NOT NULL"
         int duration_min "NOT NULL"
+    }
+
+    property_price_history{
+        int property_id PK, FK
+        timestamp changed_at PK
+        decimal previous_rent_amount "NOT NULL; Greater than 0"
     }
 
     amenities{
@@ -40,8 +62,22 @@ erDiagram
         int property_id PK, FK
         int amenity_id PK, FK
     }
-    
+
+    reviews{
+        int review_id PK
+        int viewing_id FK, UK
+        decimal rating "NOT NULL; 1 to 5"
+        text comment
+        timestamp created_at
+    }
+
+    accounts ||--o| renters : "is a"
+    accounts ||--o| landlords : "is a"
+    accounts |o--o{ accounts : refers
+    landlords ||--o{ properties : owns
+    properties ||--o{ property_price_history : records
     renters ||--o{ viewings : makes
     properties ||--o{ viewings : receives
     properties ||--o{ listing_amenities : has
     amenities ||--o{ listing_amenities : listed_in
+    viewings ||--o| reviews : "reviewed in"
