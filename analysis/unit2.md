@@ -1,5 +1,7 @@
 # DDL Reasoning
 
+## The supertype/subtype design
+
 `accounts` holds the fields every account holder shares — `display_name`, `first_name`, `last_name`, `email`, `account_active`, `date_created`, and `referred_by`. `renters` and `landlords` are subtypes: their primary key is also a foreign key back to `accounts`, so a renter or landlord row can't exist without an account behind it. I made the two roles overlapping rather than exclusive, since someone could rent a place while also listing one of their own, so nothing stops an account from having both a `renters` row and a `landlords` row. Each subtype keeps its own `is_active` flag and its own `referral_discount_used_at`, separate from the account-level `account_active`, because someone could pause their landlord listings without touching their renter activity, or redeem a referral discount as a renter without it meaning anything on the landlord side.
 
 `properties.listed_at` isn't the same as `date_created` — it tracks when the *current* listing started, and a trigger resets it whenever `is_available` flips back to true, so a property that gets rented out and relisted later doesn't inherit the time it spent off the market. "Days listed" itself isn't stored anywhere; I compute it at query time as `CURRENT_DATE - listed_at`. `property_price_history` logs the old `rent_amount` whenever it changes, using a second trigger; its primary key is `(property_id, changed_at)`, since a timestamp on its own doesn't identify anything — it only means something next to the property it belongs to, which makes it a weak entity. Last, `properties` has a unique constraint on the full address, including a new `unit_number` column, so the same listing can't be entered twice while still letting different units in the same building be separate rows.
@@ -50,3 +52,15 @@ A `listing_amenities` row only links a property to an amenity, so `fk_listing_am
 `chk_reviews_low_rating_requires_comment` requires a comment whenever the rating is below 3. A bad rating with nothing behind it isn't very useful to anyone reading it, landlord or future renter, and it's an easy state to end up in if a submission form treats the comment box as optional no matter what rating was picked.
 
 `chk_property_price_history_amount_positive` keeps `previous_rent_amount` positive too. It's a bit redundant since the value is only ever copied from `properties.rent_amount` by the trigger, which already enforces the same rule — but I kept it in case anything ever inserts into this table directly.
+
+## What changed since Unit 1
+
+Writing the actual DDL surfaced a few gaps the Unit 1 ERD didn't cover. I updated `schema/erd.mmd` (and `schema/erd.png`) to match rather than leave the two out of step; here's what changed and why:
+
+- **Landlords didn't exist.** The Unit 1 design had `renters` and `properties`, but no owner for a property — nothing could answer "whose listing is this." I split the original renter relation into a shared `accounts` supertype with `renters` and `landlords` as subtypes, so an account can hold either role, or both.
+- **No recursive foreign key.** Adding referrals (`accounts.referred_by`) gave the design its one self-referencing relationship, which nothing in the Unit 1 ERD had.
+- **No weak entity.** `property_price_history` is new — a rent-change log keyed by `(property_id, changed_at)` — and it's the one relation in the schema that's existence-dependent on another with no identity of its own.
+- **Reviews didn't exist.** Renters had no way to leave feedback on a property after viewing it, so `reviews` is a new relation, tied to the viewing it followed.
+- **`properties` picked up a few attributes along the way**: `year_built`, `unit_number` (needed once I added a uniqueness constraint on address, to keep separate units at the same address from colliding), and `listed_at` (separate from `date_created`, since a relisted property shouldn't inherit how long it was previously off the market).
+
+None of this changes the domain from Unit 1 — it's the same rental marketplace — but the original five-relation design left the landlord side of it out entirely, and that only became obvious once I tried to write DDL that actually enforced ownership.
