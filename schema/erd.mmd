@@ -5,18 +5,20 @@ erDiagram
         varchar first_name
         varchar last_name
         varchar email UK
-        boolean is_active
+        boolean account_active
         timestamp date_created
         int referred_by FK "nullable; self-reference"
     }
 
     renters{
         int account_id PK, FK
+        boolean is_active
         timestamp referral_discount_used_at "nullable"
     }
 
     landlords{
         int account_id PK, FK
+        boolean is_active
         varchar business_name "nullable"
         timestamp referral_discount_used_at "nullable"
     }

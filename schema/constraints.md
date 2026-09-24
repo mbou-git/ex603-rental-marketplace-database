@@ -5,7 +5,7 @@
 - `account_id` is the primary key. It must be unique and cannot be null.
 - `display_name` cannot be null.
 - `email` must be unique so that the same email address cannot be used for multiple accounts.
-- `is_active` must be either true or false, default to true.
+- `account_active` must be either true or false, default to true.
 - `date_created` defaults to the current timestamp when a record is inserted.
 - `referred_by` is nullable, since not every account was referred.
 - `referred_by` cannot equal `account_id`; an account cannot refer itself.
@@ -17,6 +17,7 @@
 ## renters
 
 - `account_id` is the primary key. It must be unique and cannot be null.
+- `is_active` must be either true or false, default to true.
 - `referral_discount_used_at` is nullable; it is only set once the renter-side referral discount has been redeemed.
 
 ### Foreign keys
@@ -26,6 +27,7 @@
 ## landlords
 
 - `account_id` is the primary key. It must be unique and cannot be null.
+- `is_active` must be either true or false, default to true. 
 - `business_name` is nullable, since an individual landlord has no company to name.
 - `referral_discount_used_at` is nullable; it is only set once the landlord-side referral discount has been redeemed.
 
@@ -47,7 +49,7 @@
 
 ### Foreign keys
 
-- `landlord_id` references `landlords.account_id` with **ON DELETE RESTRICT**. A landlord cannot be deleted while they still own properties. The account should be marked inactive instead.
+- `landlord_id` references `landlords.account_id` with **ON DELETE RESTRICT**. A landlord cannot be deleted while they still own properties. Set `landlords.is_active = FALSE` instead.
 
 ### Unique constraints
 
@@ -78,7 +80,7 @@
 
 ### Foreign keys
 
-- `renter_id` references `renters.account_id` with **ON DELETE RESTRICT**. A renter cannot be deleted while viewing records still reference them. This prevents orphaned records and preserves viewing history. The account should be marked inactive instead.
+- `renter_id` references `renters.account_id` with **ON DELETE RESTRICT**. A renter cannot be deleted while viewing records still reference them. This prevents orphaned records and preserves viewing history. Set `renters.is_active = FALSE` instead.
 - `property_id` references `properties.property_id` with **ON DELETE RESTRICT**. A property with viewing history cannot be deleted. It should be marked unavailable instead so that its history is preserved.
 
 ## amenities

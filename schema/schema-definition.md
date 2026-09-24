@@ -5,7 +5,7 @@
 **Role:** Actor (supertype)
 
 **Relation schema:**  
-`accounts(account_id, display_name, first_name, last_name, email, is_active, date_created, referred_by)`
+`accounts(account_id, display_name, first_name, last_name, email, account_active, date_created, referred_by)`
 
 | Attribute | Domain | Description |
 |---|---|---|
@@ -14,7 +14,7 @@
 | `first_name` | `VARCHAR` Variable length up to 50 characters | Account holder's first name |
 | `last_name` | `VARCHAR` Variable length up to 50 characters | Account holder's last name |
 | `email` | `VARCHAR` Variable length up to 100 characters; cannot be blank; no duplicate | Account holder's email address |
-| `is_active` | `BOOLEAN` | Indicates whether the account is currently active |
+| `account_active` | `BOOLEAN` | Indicates whether the account is currently active |
 | `date_created` | `TIMESTAMP` | Date and time the account was created |
 | `referred_by` | `INTEGER`, nullable | Identifier of the account that referred this account to the platform, if any |
 
@@ -31,11 +31,12 @@
 **Role:** Actor subtype
 
 **Relation schema:**  
-`renters(account_id, referral_discount_used_at)`
+`renters(account_id, is_active, referral_discount_used_at)`
 
 | Attribute | Domain | Description |
 |---|---|---|
 | `account_id` | `INTEGER` | Identifier of the account acting as a renter |
+| `is_active` | `BOOLEAN` | Indicates whether the renter role is currently active for this account |
 | `referral_discount_used_at` | `TIMESTAMP`, nullable | Date and time the renter redeemed the discount earned from being referred; null if never redeemed |
 
 **Primary key:** `account_id`
@@ -51,11 +52,12 @@
 **Role:** Actor subtype
 
 **Relation schema:**  
-`landlords(account_id, business_name, referral_discount_used_at)`
+`landlords(account_id, is_active, business_name, referral_discount_used_at)`
 
 | Attribute | Domain | Description |
 |---|---|---|
 | `account_id` | `INTEGER` | Identifier of the account acting as a landlord |
+| `is_active` | `BOOLEAN` | Indicates whether the landlord role is currently active for this account |
 | `business_name` | `VARCHAR` Variable length up to 100 characters, nullable | Name of the property-management company the landlord represents, if any; null for an individual landlord |
 | `referral_discount_used_at` | `TIMESTAMP`, nullable | Date and time the landlord redeemed the discount earned from being referred; null if never redeemed |
 
